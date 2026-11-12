@@ -8,11 +8,14 @@ and `oic-sync`.
 
 Do **not** describe a vulnerability in a public issue.
 
-A private reporting channel is not set up yet: GitHub private vulnerability reporting is not
-enabled on the organization's repositories and no security contact is published. Until it is,
-open a public issue in [`open-img-cloud/.github`](https://github.com/open-img-cloud/.github/issues)
-titled "Security contact request", without any detail, and a maintainer will arrange a private
-channel.
+Report it privately through GitHub: open the **Security** tab of the affected repository and
+choose **Report a vulnerability** (private vulnerability reporting is enabled on every
+repository of the organization). For the build pipeline, use
+[`open-img-cloud/.github`](https://github.com/open-img-cloud/.github/security/advisories/new);
+for the image distribution service, [`open-img-cloud/images-router`](https://github.com/open-img-cloud/images-router/security/advisories/new);
+for a specific image, its own repository. When unsure, use `open-img-cloud/.github`.
+
+The report stays visible only to you and the maintainers until a fix is published.
 
 Vulnerabilities in the software inside an image (kernel, OpenSSL, cloud-init...) belong to the
 upstream distribution: report them there. The project republishes fixed images when the
