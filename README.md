@@ -1,4 +1,23 @@
-# Open Image Cloud documentation
+<p align="center">
+  <a href="https://openimages.cloud">
+    <img src="https://openimages.cloud/img/og.png" alt="openimages.cloud: signed, boot-tested cloud images for OpenStack and Proxmox" width="720">
+  </a>
+</p>
+
+<h1 align="center">Open Image Cloud documentation</h1>
+
+<p align="center">
+  <a href="https://github.com/open-img-cloud/docs/actions/workflows/links.yml"><img alt="Links" src="https://github.com/open-img-cloud/docs/actions/workflows/links.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="License CC-BY-4.0" src="https://img.shields.io/badge/license-CC--BY--4.0-555"></a>
+</p>
+
+<p align="center">
+  <a href="https://openimages.cloud"><b>Website</b></a> ·
+  <a href="https://openimages.cloud/images/">Catalog</a> ·
+  <a href="docs/getting-started.md">Getting started</a> ·
+  <a href="https://openimages.cloud/verify/">Verify</a> ·
+  <a href="https://github.com/open-img-cloud/docs/issues">Report an issue</a>
+</p>
 
 Open Image Cloud ([openimages.cloud](https://openimages.cloud)) publishes **signed, tested
 qcow2 cloud images** for **OpenStack** and **Proxmox VE**, built in public CI from official
