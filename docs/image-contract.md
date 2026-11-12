@@ -63,7 +63,9 @@ All checks are required (`strict` and `require_ipv6` are on by default):
 5. Hostname taken from the metadata.
 6. Root partition and filesystem (or ZFS pool) grown to at least 80% of the flavor disk.
 7. Passwordless root for the default user (sudo or doas).
-8. The global IPv6 address Neutron assigned to the port is configured, and the guest reaches the
+8. qemu-guest-agent running (the test image is registered with `hw_qemu_guest_agent=yes`; the
+   catalog advertises quiesced snapshots, which need the agent).
+9. The global IPv6 address Neutron assigned to the port is configured, and the guest reaches the
    IPv6 Internet.
 
 Timeouts are generous on purpose (SSH 7 minutes, IPv6 address 4 minutes, DNS and IPv6 egress 2
