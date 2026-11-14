@@ -1,12 +1,13 @@
 # oic-sync
 
 [`oic-sync`](https://github.com/open-img-cloud/oic-sync) keeps the catalog images in sync with
-an OpenStack Glance. It reads [`index.json`](catalog-index.md), verifies the cosign signature of
+an OpenStack Glance or a Proxmox VE node (as VM templates). It reads [`index.json`](catalog-index.md), verifies the cosign signature of
 each image, imports the versions the cloud does not have yet, gives the newest one a stable name
 ("Debian 13") and retires older ones. It keeps no local state: run it daily from a systemd timer, a
 Kubernetes CronJob or a CI job; when everything is up to date it changes nothing.
 
-Status: **alpha**. OpenStack is supported; Proxmox VE is planned. License: Apache-2.0.
+Status: **alpha**. OpenStack and Proxmox VE (VM templates, tested on Proxmox VE 9.2) are
+supported. License: Apache-2.0.
 The repository README is the reference; this page summarizes it.
 
 ## Install
@@ -16,9 +17,10 @@ No release has been published yet: the PyPI package and the container image
 but has not run). Until then, install from GitHub (Python 3.10 or newer):
 
 ```sh
+# OpenStack: the backend needs openstacksdk, an optional extra
+pipx install 'oic-sync[openstack] @ git+https://github.com/open-img-cloud/oic-sync.git'
+# Proxmox VE, on the node itself: no extra needed
 pipx install git+https://github.com/open-img-cloud/oic-sync.git
-# or, in a virtual environment
-pip install git+https://github.com/open-img-cloud/oic-sync.git
 ```
 
 Credentials come from the standard
@@ -65,9 +67,8 @@ Main options (full list: `oic-sync --help` and the repository README):
 `openstack status --check` exits with 1 when an image is not up to date, for monitoring. Exit
 codes: 0 success, 1 at least one image failed, 2 invalid arguments or index.
 
-Service images skipped by default today: `octavia-amphora` and `manila-service-image`.
-`trove-guest-image` is not in that list in the current code, so a sync without `--image` also
-imports it; name your images explicitly if you do not want it.
+Service and test images skipped by default: `octavia-amphora`, `manila-service-image`,
+`trove-guest-image` and `cirros`. Name them with `--image`, or add `--include-service-images`.
 
 ## How it works
 
@@ -103,6 +104,34 @@ data "openstack_images_image_v2" "debian" {
   most_recent = true
 }
 ```
+
+## Proxmox VE
+
+`oic-sync proxmox` keeps one VM template per image version on a Proxmox VE node, ready for
+`qm clone`. It runs on the node as root and talks to the local API through `pvesh`: no API token.
+Downloads go to a file storage with the `import` content type, enabled once:
+
+```sh
+# list the content types the storage already has, plus import
+pvesm set local --content iso,vztmpl,backup,import
+
+oic-sync proxmox status
+oic-sync proxmox sync --image debian-13 --image ubuntu-24.04 --dry-run
+oic-sync proxmox sync --image debian-13 --image ubuntu-24.04 --vmid-base 9000 --disk-storage local-lvm
+oic-sync proxmox sync --image debian-13 --keep 2 --delete
+
+# Use a template (cloud images are small: grow the disk before the first boot)
+qm clone 9000 120 --name web1 --full 0
+qm set 120 --sshkeys ~/.ssh/id_ed25519.pub
+qm resize 120 scsi0 +20G && qm start 120
+```
+
+Each import is checked by Proxmox itself against the signed sha256 (`download-url --checksum`).
+Templates get the tags `oic` and `oic-<image id>`; the current version is named after the image
+(`debian-13`), older ones `<image id>-<version>` with the tag `oic-retired`. With `--delete`, a
+version beyond `--keep` is destroyed only when no linked clone uses it. Clones are never
+touched. Options and details: the
+[repository README](https://github.com/open-img-cloud/oic-sync#proxmox-ve).
 
 ## Run it periodically
 
