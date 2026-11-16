@@ -7,12 +7,14 @@
 <h1 align="center">Open Image Cloud documentation</h1>
 
 <p align="center">
+  <a href="https://github.com/open-img-cloud/docs/actions/workflows/build.yml"><img alt="Build" src="https://github.com/open-img-cloud/docs/actions/workflows/build.yml/badge.svg"></a>
   <a href="https://github.com/open-img-cloud/docs/actions/workflows/links.yml"><img alt="Links" src="https://github.com/open-img-cloud/docs/actions/workflows/links.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License CC-BY-4.0" src="https://img.shields.io/badge/license-CC--BY--4.0-555"></a>
 </p>
 
 <p align="center">
-  <a href="https://openimages.cloud"><b>Website</b></a> ·
+  <a href="https://openimages.cloud/docs/"><b>Documentation</b></a> ·
+  <a href="https://openimages.cloud">Website</a> ·
   <a href="https://openimages.cloud/images/">Catalog</a> ·
   <a href="docs/getting-started.md">Getting started</a> ·
   <a href="https://openimages.cloud/verify/">Verify</a> ·
@@ -23,6 +25,11 @@ Open Image Cloud ([openimages.cloud](https://openimages.cloud)) publishes **sign
 qcow2 cloud images** for **OpenStack** and **Proxmox VE**, built in public CI from official
 upstream releases. This repository holds the project documentation for users, contributors and
 maintainers.
+
+**Read it at <https://openimages.cloud/docs/>.** The published version is built from this
+repository with [Zensical](https://zensical.org/) and deployed with the website
+([oic-website](https://github.com/open-img-cloud/oic-website)), at each website deploy (push to
+its `main` and daily).
 
 The catalog itself (images, current versions, sizes, download links) lives on the website and in
 the machine-readable index. This documentation never copies it, because it changes every day:
@@ -59,6 +66,20 @@ the machine-readable index. This documentation never copies it, because it chang
 - [Contributing](docs/contributing.md): reporting problems, requesting an image, onboarding a
   new image, changing the shared platform.
 - [Security policy](SECURITY.md).
+
+## Building locally
+
+The site is configured in [`zensical.toml`](zensical.toml); pages are in [`docs/`](docs/).
+With [uv](https://docs.astral.sh/uv/):
+
+```sh
+uvx --from zensical==0.1.1 zensical serve           # preview on http://localhost:8000/docs/
+uvx --from zensical==0.1.1 zensical build --strict  # static site in site/
+```
+
+Everything the pages load is self-hosted (fonts, Mermaid, icons), because the website serves
+them under a strict Content Security Policy: do not add third-party fonts, scripts or styles.
+New pages must be added to `nav` in `zensical.toml`.
 
 ## License
 

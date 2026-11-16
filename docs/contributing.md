@@ -13,7 +13,7 @@
   [`.github`](https://github.com/open-img-cloud/.github/issues). Only images the project is
   allowed to redistribute can be added (for example, Red Hat Enterprise Linux is out; Rocky Linux
   and AlmaLinux are in the catalog instead).
-- Security issues: see the [security policy](../SECURITY.md).
+- Security issues: see the [security policy](https://github.com/open-img-cloud/docs/blob/main/SECURITY.md).
 
 ## Changing an existing image
 
