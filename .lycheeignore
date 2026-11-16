@@ -1,3 +1,0 @@
-# The published site, live once open-img-cloud/oic-website#45 is deployed.
-# Remove this line after the first deploy that serves https://openimages.cloud/docs/.
-^https://openimages\.cloud/docs/$
