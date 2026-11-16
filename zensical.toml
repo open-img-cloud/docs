@@ -1,0 +1,114 @@
+# Zensical configuration for https://openimages.cloud/docs/
+# Build: uvx --from zensical==0.1.1 zensical build --strict (output in site/)
+# Everything is self-hosted: the website serves the docs under a strict CSP
+# (no third-party fonts, scripts or styles).
+
+[project]
+site_name = "Open Image Cloud docs"
+site_url = "https://openimages.cloud/docs/"
+site_description = "Documentation of Open Image Cloud: signed, boot-tested qcow2 cloud images for OpenStack and Proxmox VE."
+site_author = "Open Image Cloud"
+copyright = "Documentation licensed under CC-BY-4.0"
+
+repo_url = "https://github.com/open-img-cloud/docs"
+repo_name = "open-img-cloud/docs"
+edit_uri = "edit/main/docs/"
+
+nav = [
+  { "Home" = "index.md" },
+  { "Using the images" = [
+    { "Getting started" = "getting-started.md" },
+    { "Verifying images" = "verifying-images.md" },
+    { "Image contract and quality checks" = "image-contract.md" },
+    { "Catalog index" = "catalog-index.md" },
+    { "oic-sync" = "oic-sync.md" },
+    { "OpenStack service images" = "service-images.md" },
+  ] },
+  { "Contributing and internals" = [
+    { "Architecture" = "architecture.md" },
+    { "Contributing" = "contributing.md" },
+  ] },
+]
+
+extra_css = ["stylesheets/extra.css"]
+
+[project.theme]
+language = "en"
+# Template overrides: self-hosted Mermaid, repository link without GitHub API calls.
+custom_dir = "overrides"
+# Never load Google Fonts: Inter and JetBrains Mono are self-hosted in
+# docs/assets/fonts and declared in stylesheets/extra.css.
+font = false
+logo = "assets/images/logo.svg"
+favicon = "assets/images/favicon.svg"
+features = [
+  "content.action.edit",
+  "content.action.view",
+  "content.code.copy",
+  "content.tabs.link",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.path",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "toc.follow",
+]
+
+[project.theme.icon]
+repo = "fontawesome/brands/github"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/open-img-cloud"
+name = "Open Image Cloud on GitHub"
+
+[[project.extra.social]]
+icon = "lucide/globe"
+link = "https://openimages.cloud/"
+name = "openimages.cloud"
+
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+tables = {}
+toc.permalink = true
+pymdownx.betterem = {}
+pymdownx.details = {}
+pymdownx.highlight.anchor_linenums = true
+pymdownx.highlight.line_spans = "__span"
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.inlinehilite = {}
+pymdownx.keys = {}
+pymdownx.magiclink = {}
+pymdownx.superfences.custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+pymdownx.tabbed.alternate_style = true
+pymdownx.tasklist.custom_checkbox = true

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{#-
+  Mermaid is self-hosted (the website CSP blocks third-party scripts). The theme
+  only fetches it from unpkg.com when no global `mermaid` exists, so the local
+  copy is loaded first, and only on pages that contain a diagram.
+-#}
+{% block scripts %}
+  {% if page and page.content and 'class="mermaid"' in page.content %}
+    <script src="{{ 'assets/vendor/mermaid/mermaid-12.3.0.min.js' | url }}"></script>
+  {% endif %}
+  {{ super() }}
+{% endblock %}

@@ -1,0 +1,50 @@
+name: Build
+
+# Builds the documentation site with Zensical in strict mode (broken internal
+# links and other warnings fail the build). The published copy is built and
+# deployed by open-img-cloud/oic-website to https://openimages.cloud/docs/.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zensical:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Install Zensical
+        run: python -m pip install --disable-pip-version-check zensical==0.1.1
+
+      - name: Build (strict)
+        run: zensical build --strict
+
+      - name: No third-party resources
+        # The site is served under a strict CSP (self only): fail if a page
+        # loads a script, stylesheet, font or image from another host.
+        run: |
+          if grep -rnoE '<(script|img|iframe)[^>]+src="(https?:)?//[^"]+"|<link[^>]+rel="(stylesheet|preload|modulepreload)"[^>]+href="(https?:)?//[^"]+"|@import[^;]*(https?:)?//' site --include='*.html' --include='*.css'; then
+            echo "::error::External resources found in the built site"; exit 1
+          fi
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7
+        if: github.event_name == 'pull_request'
+        with:
+          name: docs-site
+          path: site/
+          retention-days: 7
