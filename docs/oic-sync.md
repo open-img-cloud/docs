@@ -68,7 +68,7 @@ Main options (full list: `oic-sync --help` and the repository README):
 codes: 0 success, 1 at least one image failed, 2 invalid arguments or index.
 
 Service and test images skipped by default: `octavia-amphora`, `manila-service-image`,
-`trove-guest-image` and `cirros`. Name them with `--image`, or add `--include-service-images`.
+`trove-guest-image`, the test image `cirros` and the rescue image `cloud-rescue`. Name them with `--image`, or add `--include-service-images`.
 
 ## How it works
 
