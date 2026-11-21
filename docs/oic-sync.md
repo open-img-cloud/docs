@@ -12,15 +12,15 @@ The repository README is the reference; this page summarizes it.
 
 ## Install
 
-No release has been published yet: the PyPI package and the container image
-`ghcr.io/open-img-cloud/oic-sync` will appear with the first tag (the release workflow is ready
-but has not run). Until then, install from GitHub (Python 3.10 or newer):
+From PyPI (Python 3.10 or newer), or the Debian and RPM packages and the container image
+`ghcr.io/open-img-cloud/oic-sync` of each
+[release](https://github.com/open-img-cloud/oic-sync/releases):
 
 ```sh
 # OpenStack: the backend needs openstacksdk, an optional extra
-pipx install 'oic-sync[openstack] @ git+https://github.com/open-img-cloud/oic-sync.git'
+pipx install 'oic-sync[openstack]'
 # Proxmox VE, on the node itself: no extra needed
-pipx install git+https://github.com/open-img-cloud/oic-sync.git
+pipx install oic-sync
 ```
 
 Credentials come from the standard
@@ -61,7 +61,7 @@ Main options (full list: `oic-sync --help` and the repository README):
 | `--import-method` | `auto` (default), `web-download`, `glance-direct` or `upload` |
 | `--property K=V` | Extra or overriding Glance property (the `oic_*` keys are reserved) |
 | `--with-optional-properties` | Add `hw_rng_model=virtio` (flavors must allow `hw_rng:allowed`) |
-| `--index-url URL` | Another index (`$OIC_INDEX_URL`), for example a mirror |
+| `--index-url URL` | Another index (`$OIC_INDEX_URL`), for example [your own mirror](mirror.md) |
 | `--cloud`, `--region` | clouds.yaml entry and region (`$OS_CLOUD`) |
 
 `openstack status --check` exits with 1 when an image is not up to date, for monitoring. Exit
