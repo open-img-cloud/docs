@@ -21,6 +21,7 @@ nav = [
     { "Verifying images" = "verifying-images.md" },
     { "Image contract and quality checks" = "image-contract.md" },
     { "Catalog index" = "catalog-index.md" },
+    { "Versions, retention and end of life" = "lifecycle.md" },
     { "oic-sync" = "oic-sync.md" },
     { "Run your own mirror" = "mirror.md" },
     { "OpenStack service images" = "service-images.md" },

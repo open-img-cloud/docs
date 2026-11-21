@@ -55,6 +55,8 @@ the machine-readable index. This documentation never copies it, because it chang
   how it is tested.
 - [Catalog index](docs/catalog-index.md): `index.json`, `versions.json`, `MANIFEST.json` and the
   osism export, for automation.
+- [Versions, retention and end of life](docs/lifecycle.md): what is kept, how new versions
+  arrive, what happens at the end of upstream support.
 - [oic-sync](docs/oic-sync.md): keep Glance and Proxmox VE in sync with the catalog.
 - [Run your own mirror](docs/mirror.md): `oic-sync mirror` to a directory or an S3 bucket.
 - [OpenStack service images](docs/service-images.md): Octavia amphora, Manila service image,

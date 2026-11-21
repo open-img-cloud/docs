@@ -16,7 +16,7 @@ automated. All files are served by `https://images.openimages.cloud`.
 `images-router` Worker; they are also reachable at `https://openimages.cloud/index.json` and
 `https://openimages.cloud/osism/images.yml`. Files at a bucket root (`versions.json`) and under
 `latest/` are cached for 5 minutes; files under a versioned path, including manifests, are
-immutable.
+immutable and kept (see [Versions, retention and end of life](lifecycle.md)).
 
 ## `index.json` (`oic-index/v1`)
 
