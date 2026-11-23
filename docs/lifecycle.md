@@ -61,7 +61,9 @@ shown on each image page, on the status page and in `index.json` (`support` bloc
 
 New deployments should move to the successor (for example Debian 12 to Debian 13). Automation
 can enforce it: `oic-sync --eol skip` leaves end-of-life images out of a sync, `--eol fail`
-stops on them; the [Ansible collection and Terraform module](oic-sync.md) have the same option.
+stops on them. The [Ansible](ansible.md) role `glance_image` has the same choice
+(`glance_image_eol`), and the [Terraform provider](terraform.md) exposes `end_of_life` and
+`end_of_life_soon` to filter on.
 
 ## OpenStack series images
 

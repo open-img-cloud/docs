@@ -23,8 +23,11 @@ nav = [
     { "Catalog index" = "catalog-index.md" },
     { "Versions, retention and end of life" = "lifecycle.md" },
     { "oic-sync" = "oic-sync.md" },
+    { "Terraform and OpenTofu" = "terraform.md" },
+    { "Ansible" = "ansible.md" },
     { "Run your own mirror" = "mirror.md" },
     { "OpenStack service images" = "service-images.md" },
+    { "SCS-0102 metadata" = "scs-0102.md" },
   ] },
   { "Contributing and internals" = [
     { "Architecture" = "architecture.md" },

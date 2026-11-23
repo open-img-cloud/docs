@@ -12,6 +12,9 @@ the machine-readable index. This documentation never copies it, because it chang
 | Catalog, one page per image | <https://openimages.cloud/images/> (image pages: `https://openimages.cloud/images/<id>/`) |
 | Verification guide | <https://openimages.cloud/verify/> |
 | How images are tested | <https://openimages.cloud/quality/> |
+| Build and release status of every image | <https://openimages.cloud/status/> |
+| Commands for one image (OpenStack CLI, Proxmox VE, oic-sync, Terraform) | <https://openimages.cloud/get/> |
+| Tools that use the catalog | <https://openimages.cloud/integrations/> |
 | Why the project exists | <https://openimages.cloud/about/> |
 | Image registry | <https://images.openimages.cloud> (files under `/<id>/<version>/` and `/<id>/latest/`) |
 | Machine-readable catalog | <https://images.openimages.cloud/index.json> (schema `oic-index/v1`) |
@@ -28,7 +31,11 @@ the machine-readable index. This documentation never copies it, because it chang
   how it is tested.
 - [Catalog index](catalog-index.md): `index.json`, `versions.json`, `MANIFEST.json` and the
   osism export, for automation.
-- [oic-sync](oic-sync.md): keep Glance in sync with the catalog.
+- [oic-sync](oic-sync.md): keep Glance and Proxmox VE in sync with the catalog.
+- [Terraform and OpenTofu](terraform.md): the `open-img-cloud/openimages` provider.
+- [Ansible](ansible.md): the `openimages.cloud` collection.
+- [SCS-0102 metadata](scs-0102.md): the Sovereign Cloud Stack image properties, and the known
+  gaps.
 - [OpenStack service images](service-images.md): Octavia amphora, Manila service image,
   Trove guest image.
 

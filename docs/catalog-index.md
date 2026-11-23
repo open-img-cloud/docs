@@ -41,8 +41,10 @@ images[]
   repo                     GitHub repository URL
   login_user               default user, or null (service images without one)
   os_distro, os_version    OpenStack properties, or null
+  min_ram                  smallest RAM the image boots with, in MiB (Glance min_ram)
   latest_version
   versions_url             URL of versions.json, or null when the image has none yet
+  packages_url             packages.json of the latest version (installed packages), or null
   tags[]
   glance_properties        image-level properties (no per-artifact keys)
   optional_glance_properties   supported but opt-in, today {"hw_rng_model": "virtio"}
@@ -57,11 +59,21 @@ images[]
     glance_properties      complete property set to pass to `openstack image create`
 ```
 
-Per-artifact `glance_properties` combine: `os_distro`, `os_version`, `os_admin_user`,
-`architecture`, the defaults (`os_type=linux`, `hw_qemu_guest_agent=yes`, `hw_disk_bus=scsi`,
-`hw_scsi_model=virtio-scsi`, `hw_vif_multiqueue_enabled=true`, `os_require_quiesce=yes`),
-`hw_firmware_type=uefi` and `hw_machine_type=q35` for UEFI artifacts, any per-image overrides, and
-the identification keys `oic_id`, `oic_version` and `oic_sha256`.
+Per-artifact `glance_properties` combine:
+
+- `os_distro`, `os_version`, `os_admin_user`, `architecture`;
+- the defaults: `os_type=linux`, `hw_qemu_guest_agent=yes`, `hw_disk_bus=scsi`,
+  `hw_scsi_model=virtio-scsi`, `hw_vif_multiqueue_enabled=true`, `os_require_quiesce=yes`;
+- `hw_firmware_type=uefi` and `hw_machine_type=q35` for UEFI artifacts;
+- the [SCS-0102](scs-0102.md) metadata: `image_original_user`, `image_source`,
+  `image_build_date`, `image_description`, `os_purpose`, `replace_frequency`,
+  `provided_until`, `uuid_validity`;
+- per-image overrides (for example `hw_rescue_bus=virtio` and `hw_rescue_device=disk` on
+  `cloud-rescue`, so Nova can attach it as a rescue disk);
+- the identification keys `oic_id`, `oic_version` and `oic_sha256`.
+
+`min_ram` and `min_disk` are Glance image attributes, not properties: `min_ram` is published at
+image level, and `min_disk` is the artifact `virtual_size` rounded up to the next GiB.
 
 Example queries:
 

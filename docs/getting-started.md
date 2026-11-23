@@ -62,7 +62,7 @@ Details and the meaning of each check: [Verifying images](verifying-images.md).
 openstack image create \
   --disk-format qcow2 --container-format bare \
   --file <file> \
-  --min-disk <GiB> \
+  --min-disk <GiB> --min-ram <MiB> \
   --property os_distro=<os_distro> --property os_version=<os_version> \
   --property os_admin_user=<login_user> --property architecture=x86_64 \
   --property os_type=linux \
@@ -80,7 +80,9 @@ openstack image create \
 - UEFI artifacts also need `hw_firmware_type=uefi` and `hw_machine_type=q35` (already included
   in their `glance_properties`).
 - `--min-disk` is the virtual size of the image rounded up to the next GiB (`virtual_size` in
-  the index or the manifest).
+  the index or the manifest); `--min-ram` is `min_ram` in the index (1024 MiB for most images).
+- The index also adds the [SCS-0102](scs-0102.md) metadata (`image_source`,
+  `image_build_date`, `os_purpose`...), included in `glance_properties`.
 - `hw_rng_model=virtio` is supported by every image but left optional
   (`optional_glance_properties` in the index): Nova refuses to boot it unless the flavor allows
   it (`hw_rng:allowed=True`).
@@ -88,7 +90,9 @@ openstack image create \
   detect newer versions. They are harmless otherwise.
 
 To keep images up to date automatically, use [oic-sync](oic-sync.md) or the
-[osism export](catalog-index.md#osism-openstack-image-manager-export).
+[osism export](catalog-index.md#osism-openstack-image-manager-export). To import them from
+infrastructure code, use the [Terraform and OpenTofu provider](terraform.md) or the
+[Ansible collection](ansible.md). <https://openimages.cloud/integrations/> compares them.
 
 Log in with the image's default user (`login_user` in the index, shown on the image page) and
 the key pair you passed to Nova. Password login over SSH is disabled.
@@ -114,12 +118,13 @@ qm set 9000 --ide2 local-lvm:cloudinit --boot order=scsi0 \
 qm template 9000
 ```
 
-For a UEFI artifact, add `--bios ovmf --machine q35 --efidisk0 local-lvm:0,efitype=4m` to
+Give the VM at least the image's `min_ram` (index or image page). For a UEFI artifact, add `--bios ovmf --machine q35 --efidisk0 local-lvm:0,efitype=4m` to
 `qm create`. Adjust the VM id, storage names and bridge to your cluster.
 
 The images read the Proxmox cloud-init drive: their cloud-init datasource list is
 `ConfigDrive, OpenStack, NoCloud, None` (see [image contract](image-contract.md)). Images that
-do not use cloud-init (NixOS) document their own metadata mechanism in their repository.
+do not use cloud-init (NixOS, Flatcar, Talos, OPNsense) document their own metadata mechanism in
+their repository.
 
 Download into the `import` content is not wrapped in a cosign check: verify the signature on a
 workstation first (step 2) if you need provenance, or compare the sha256 with a verified

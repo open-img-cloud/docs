@@ -64,6 +64,10 @@ Main options (full list: `oic-sync --help` and the repository README):
 | `--index-url URL` | Another index (`$OIC_INDEX_URL`), for example [your own mirror](mirror.md) |
 | `--cloud`, `--region` | clouds.yaml entry and region (`$OS_CLOUD`) |
 
+`--no-verify-signature` imports without the cosign check (not recommended): use it only
+where cosign cannot run, and prefer a [mirror](mirror.md) that verifies upstream. `list` and
+`status` take `--json`; `--timeout` bounds each import step (default 3600 seconds).
+
 `openstack status --check` exits with 1 when an image is not up to date, for monitoring. Exit
 codes: 0 success, 1 at least one image failed, 2 invalid arguments or index.
 
@@ -78,8 +82,8 @@ For each selected artifact:
    images) in the current project. `oic_version` and `oic_sha256` tell which version each holds.
 2. **Verify** the cosign bundle against the sha256 of the index, with the signer identity and
    issuer published in the index. A failed verification means no import.
-3. **Import** hidden under a versioned name, with the Glance properties of the index and
-   `min_disk` from the virtual size. With Glance `web-download`, the multihash Glance computes
+3. **Import** hidden under a versioned name, with the Glance properties of the index,
+   `min_disk` from the virtual size and `min_ram` from the index (since 0.4.0). With Glance `web-download`, the multihash Glance computes
    (sha512 by default) must equal the index sha512; otherwise the image is streamed from the CDN
    to Glance with sha256, sha512 and size checked on the fly. On any mismatch the new image is
    deleted.
@@ -95,8 +99,10 @@ sha512, which comes from the manifest over HTTPS but is not itself signed. Use
 
 ### Terraform and OpenTofu
 
-The stable name moves to each new version, so a data source that looks an image up by name will
-pick the new image after a sync. Look images up by property instead:
+To import images from Terraform or OpenTofu instead of oic-sync, use the
+[openimages provider](terraform.md). To use images that oic-sync imported: the stable name moves
+to each new version, so a data source that looks an image up by name will pick the new image
+after a sync. Look images up by property instead:
 
 ```hcl
 data "openstack_images_image_v2" "debian" {
@@ -127,6 +133,8 @@ qm resize 120 scsi0 +20G && qm start 120
 ```
 
 Each import is checked by Proxmox itself against the signed sha256 (`download-url --checksum`).
+Templates get `--memory` (default 2048 MiB), raised to the image's `min_ram` when it is higher,
+`--cores`, `--bridge`, and are created on `--node` (default: the local node).
 Templates get the tags `oic` and `oic-<image id>`; the current version is named after the image
 (`debian-13`), older ones `<image id>-<version>` with the tag `oic-retired`. With `--delete`, a
 version beyond `--keep` is destroyed only when no linked clone uses it. Clones are never
