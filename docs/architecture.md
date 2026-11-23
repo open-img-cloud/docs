@@ -10,7 +10,7 @@ flowchart LR
   UP[Upstream release] --> W[watch.yml<br/>image repo]
   CRON[images-router<br/>Cron Trigger] -->|workflow_dispatch| W
   W -->|PR auto/upstream-bump| V[VERSION]
-  V -->|merge, then push tag| R[release.yml<br/>image repo]
+  V -->|merge: auto-release.yml<br/>creates tag v&lt;VERSION&gt;| R[release.yml<br/>image repo]
   R -->|uses @main| B[Reusable build workflow<br/>open-img-cloud/.github]
   B -->|qcow2, sidecars, bundle, MANIFEST| S[(Infomaniak Object Storage<br/>one bucket per image)]
   B --> P[Cloudflare purge]
@@ -31,7 +31,10 @@ flowchart LR
 | [`.github`](https://github.com/open-img-cloud/.github) | Reusable workflows, composite actions, cloud-init policy template, [conventions](https://github.com/open-img-cloud/.github/blob/main/CONVENTIONS.md), [image standards](https://github.com/open-img-cloud/.github/blob/main/docs/IMAGE_STANDARDS.md), organization profile. GPL-2.0 |
 | [`images-router`](https://github.com/open-img-cloud/images-router) | Cloudflare Worker serving `images.openimages.cloud`, schedulers, download statistics, catalog hook. GPL-2.0 |
 | [`oic-website`](https://github.com/open-img-cloud/oic-website) | Astro site on Cloudflare Workers: catalog, guides, `index.json`, osism export. Apache-2.0 |
-| [`oic-sync`](https://github.com/open-img-cloud/oic-sync) | Glance synchronization CLI ([oic-sync](oic-sync.md)). Apache-2.0 |
+| [`oic-sync`](https://github.com/open-img-cloud/oic-sync) | Synchronization CLI for Glance, Proxmox VE and mirrors ([oic-sync](oic-sync.md)). Apache-2.0 |
+| [`terraform-provider-openimages`](https://github.com/open-img-cloud/terraform-provider-openimages) | Terraform and OpenTofu provider, read-only data sources over the index ([Terraform and OpenTofu](terraform.md)). Apache-2.0 |
+| [`ansible-collection-openimages`](https://github.com/open-img-cloud/ansible-collection-openimages) | Ansible collection `openimages.cloud` ([Ansible](ansible.md)). GPL-3.0-or-later |
+| [`docs`](https://github.com/open-img-cloud/docs) | This documentation. CC-BY-4.0 |
 | [`stackopshq/libguestfs-tools-container`](https://github.com/stackopshq/libguestfs-tools-container) (outside the organization) | Builder container `ghcr.io/stackopshq/libguestfs-tools`, signed with cosign |
 
 Image repositories consume the reusable workflows at `@main`, not at a tag: a change merged in
@@ -46,7 +49,9 @@ Each `release.yml` calls exactly one reusable workflow of `open-img-cloud/.githu
 | `build-libguestfs-image.yml` | Most distributions: customized upstream cloud images | Download and check the upstream image, run the repo's `build/customize.sh`, inject `99_oic-policy.cfg`, `virt-sysprep`, `virt-sparsify --compress`, then boot test in QEMU with a ConfigDrive seed |
 | `build-dib-image.yml` | Octavia, Manila, Trove, Gentoo | Run the repo's `build/dib-build.sh` (diskimage-builder) |
 | `build-nix-flake-image.yml` | NixOS | Run the repo's Nix build script |
-| `build-freebsd-image.yml` | FreeBSD | Build in an ephemeral FreeBSD VM (or on a FreeBSD runner), convert to compressed qcow2, then a separate release job |
+| `build-freebsd-image.yml` | FreeBSD, OPNsense, Talos Linux | Run the repo's build script as root in an ephemeral FreeBSD VM booted on the runner (KVM), convert its raw disk to compressed qcow2, then a separate release job |
+
+Flatcar Container Linux goes through `build-libguestfs-image.yml`: the official image is checked against the Flatcar image signing key and republished unchanged.
 
 These four workflow paths are exactly what the cosign identity expression accepts
 ([Verifying images](verifying-images.md)); adding a fifth engine means updating that expression
@@ -81,6 +86,10 @@ files for the full list.
   pinned to an exact version in the workflow inputs, and verify its cosign signature in a
   `verify-builder` job before anything runs. Repositories that build in `ubuntu:24.04` (Octavia,
   Manila, Trove, Gentoo, NixOS) set `verify_builder: false` and document why.
+- The DIB workflow takes an APT mirror for the builder (`apt_mirror`, default the Azure mirror of
+  `archive.ubuntu.com`), an optional `dib_distribution_mirror` for the guest, and a
+  `build_timeout_minutes` limit (default 120), so a slow mirror fails the build instead of
+  hanging it.
 - Runners default to GitHub-hosted `ubuntu-latest` (which exposes `/dev/kvm`); the
   `runner_labels` input can target self-hosted KVM runners.
 
@@ -142,12 +151,18 @@ daily at 07:30 UTC, and when dispatched by the Worker (daily scheduler and catal
    which runs the repository's `build/detect-upstream.sh`. When the upstream version differs from
    `VERSION`, it opens or updates a pull request on the branch `auto/upstream-bump`.
    Service images follow OpenStack series; Octavia has no watcher and is bumped by hand.
-2. **Merge** the pull request (manual).
-3. **Tag** `v<VERSION>` and push the tag (manual). Nothing creates the tag automatically.
+2. **Merge** the pull request (manual). **Merging is releasing.**
+3. **Tag.** Each image repository has `auto-release.yml`, which calls `.github`'s
+   `release-on-version.yml` on every push to `main` that changes `VERSION`: it creates the tag
+   `v<VERSION>` and starts `release.yml` on it. Do not tag by hand. A tag pushed by hand still
+   works the same way.
 4. **Release.** The tag triggers `release.yml`, which resolves the version and calls the reusable
    build workflow: build, sign, publish, purge, validate, runtime test, catalog hook.
 5. **Catalog.** The website and `index.json` follow through the hook, or at the next daily build.
-6. **Audit.** Every Monday `catalog-audit.yml` revalidates every `latest/` artifact and opens,
+6. **Packages.** `package-manifests.yml` reads the published image back, checks it against
+   `versions.json` and writes `packages.json` (installed packages) next to the qcow2, so the
+   website can show what changed between two versions (`packages_url` in the index).
+7. **Audit.** Every Monday `catalog-audit.yml` revalidates every `latest/` artifact and opens,
    updates or closes a "Catalog audit" issue in `open-img-cloud/.github`.
 
 Some repositories (Octavia, Manila, Trove) also have `sync-latest.yml`, a manual workflow that

@@ -37,8 +37,12 @@ Service images (Octavia, Manila, Trove) follow a different contract: see
   build.
 - **Format:** sparse, compressed qcow2, `x86_64`. ARM64 is not published.
 
-NixOS does not ship cloud-init; it uses its own metadata fetcher with the same outcome (section D
-of the standards). Each image repository documents its own deviations at the top of its README.
+Some images do not use cloud-init and reach the same outcome their own way (section D of the
+standards): NixOS (its own metadata fetcher), Flatcar Container Linux (Ignition and afterburn),
+Talos Linux (machine configuration through the Talos API, no SSH) and OPNsense (an
+openimages.cloud first-boot layer). They are tested with an adapted contract, see
+[other contracts](#other-contracts). Each image repository documents its own deviations at the
+top of its README.
 
 ## How a release is checked
 
@@ -68,9 +72,25 @@ All checks are required (`strict` and `require_ipv6` are on by default):
 9. The global IPv6 address Neutron assigned to the port is configured, and the guest reaches the
    IPv6 Internet.
 
+The test image is registered with the Glance properties the catalog publishes for every image
+(`hw_disk_bus=scsi`, `hw_scsi_model=virtio-scsi`, `hw_vif_multiqueue_enabled=true`, plus the
+UEFI ones): it boots the way users import it.
+
 Timeouts are generous on purpose (SSH 7 minutes, IPv6 address 4 minutes, DNS and IPv6 egress 2
 minutes) because DHCP leases over 2 minutes were measured in one region: a failure means the
 image is wrong, not that the cloud was slow.
+
+### Other contracts
+
+`runtime_smoke_contract` in the image's `release.yml` selects the contract:
+
+| Contract | Images | What changes |
+|---|---|---|
+| `full` (default) | General-purpose images | The nine checks above |
+| `minimal` | CirrOS | No cloud-init or guest agent checks; an sshd offering passwords is only reported (CirrOS ships a well-known password by design). The other checks keep their rules |
+| `flatcar` | Flatcar Container Linux | Provisioned by Ignition and afterburn: the cloud-init check becomes `systemctl is-system-running` reaching `running`. The other checks keep their rules |
+| `appliance` | OPNsense | Login as root with an RSA key. Instead of cloud-init and sudo: the first-boot layer reports done, the web interface answers on port 443 from the Internet, and the generated password is the same with `nova get-password` and on the serial console. SSH, DNS, hostname, root growth, guest agent and IPv6 keep their rules |
+| `talos` | Talos Linux | No SSH: a generated machine configuration is passed as user data and the checks go through the Talos API (configuration applied, machine running, hostname, IPv4, DNS, data volume grown, guest agent extension, IPv6) |
 
 ### Known limits
 
