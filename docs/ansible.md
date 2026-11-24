@@ -20,9 +20,12 @@ are recognized by the other.
 ## Install
 
 ```sh
-# Until the collection is published on Ansible Galaxy:
-ansible-galaxy collection install git+https://github.com/open-img-cloud/ansible-collection-openimages.git
+ansible-galaxy collection install openimages.cloud
 ```
+
+The collection is published on
+[Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/openimages/cloud/). To follow the
+development version: `ansible-galaxy collection install git+https://github.com/open-img-cloud/ansible-collection-openimages.git`.
 
 Requirements: ansible-core 2.15 or newer; for `glance_image` and `glance_info`, the
 `openstack.cloud` collection 2.5.0 or newer (installed as a dependency) and `openstacksdk` on the

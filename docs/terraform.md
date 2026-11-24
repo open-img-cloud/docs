@@ -24,8 +24,9 @@ terraform {
 ```
 
 The provider is published on the
-[Terraform Registry](https://registry.terraform.io/providers/open-img-cloud/openimages/latest);
-its listing on the OpenTofu Registry is under review. The full reference is the
+[Terraform Registry](https://registry.terraform.io/providers/open-img-cloud/openimages/latest)
+and the [OpenTofu Registry](https://search.opentofu.org/provider/open-img-cloud/openimages/latest),
+under the same address. The full reference is the
 [provider documentation](https://registry.terraform.io/providers/open-img-cloud/openimages/latest/docs).
 
 ## Import into OpenStack Glance
