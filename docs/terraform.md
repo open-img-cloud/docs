@@ -64,7 +64,8 @@ created this way, and the reverse.
 ## Proxmox VE
 
 With the [bpg/proxmox](https://registry.terraform.io/providers/bpg/proxmox/latest) provider,
-the node downloads the versioned file and checks its SHA-256:
+the node downloads the versioned file and checks its SHA-256. The
+[Proxmox VE tutorial](proxmox.md#terraform-and-opentofu) continues with the VM that imports it:
 
 ```hcl
 data "openimages_image" "rocky" {

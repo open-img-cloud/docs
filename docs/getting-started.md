@@ -126,6 +126,9 @@ The images read the Proxmox cloud-init drive: their cloud-init datasource list i
 do not use cloud-init (NixOS, Flatcar, Talos, OPNsense) document their own metadata mechanism in
 their repository.
 
+The [Proxmox VE tutorial](proxmox.md) explains each step, then clones VMs from the template,
+with cloud-init, UEFI and Terraform.
+
 Download into the `import` content is not wrapped in a cosign check: verify the signature on a
 workstation first (step 2) if you need provenance, or compare the sha256 with a verified
 manifest.

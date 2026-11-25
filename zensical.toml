@@ -23,6 +23,7 @@ nav = [
     { "Catalog index" = "catalog-index.md" },
     { "Versions, retention and end of life" = "lifecycle.md" },
     { "oic-sync" = "oic-sync.md" },
+    { "Proxmox VE" = "proxmox.md" },
     { "Terraform and OpenTofu" = "terraform.md" },
     { "Ansible" = "ansible.md" },
     { "Run your own mirror" = "mirror.md" },
