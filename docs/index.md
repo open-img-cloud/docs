@@ -32,6 +32,7 @@ the machine-readable index. This documentation never copies it, because it chang
 - [Catalog index](catalog-index.md): `index.json`, `versions.json`, `MANIFEST.json` and the
   osism export, for automation.
 - [oic-sync](oic-sync.md): keep Glance and Proxmox VE in sync with the catalog.
+- [Proxmox VE](proxmox.md): from an image to a running VM, by hand, with oic-sync, Terraform or Ansible.
 - [Terraform and OpenTofu](terraform.md): the `open-img-cloud/openimages` provider.
 - [Ansible](ansible.md): the `openimages.cloud` collection.
 - [SCS-0102 metadata](scs-0102.md): the Sovereign Cloud Stack image properties, and the known
